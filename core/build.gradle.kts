@@ -1,6 +1,9 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     id("java")
     id("io.papermc.paperweight.userdev")
+    kotlin("jvm")
 }
 
 repositories {
@@ -28,8 +31,10 @@ dependencies {
     compileOnly(project(":1.21"))
     compileOnly(project(":1.21.1"))
     compileOnly(project(":1.21.3"))
-    compileOnly(files("libs/Origins-Reborn-2.3.29-all.jar"))
-    paperweight.paperDevBundle("1.21.3-R0.1-SNAPSHOT")
+    compileOnly(project(":1.21.4"))
+    compileOnly(files("libs/Origins-Reborn-Enhanced-2.4.9-all.jar"))
+    paperweight.paperDevBundle("1.21.4-R0.1-SNAPSHOT")
+    implementation(kotlin("stdlib-jdk8"))
 }
 
 java {
@@ -40,6 +45,12 @@ java {
 tasks {
     compileJava {
         options.release.set(17)
+    }
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_17)
     }
 }
 

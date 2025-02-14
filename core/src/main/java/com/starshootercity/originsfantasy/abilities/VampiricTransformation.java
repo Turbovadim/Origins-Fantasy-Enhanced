@@ -41,7 +41,7 @@ public class VampiricTransformation implements VisibleAbility, Listener {
             if (event.getEntity().getKiller() == null) return;
             AbilityRegister.runForAbility(event.getEntity().getKiller(), getKey(), () -> {
                 if (random.nextDouble() <= OriginsFantasy.getInstance().getConfig().getDouble("vampire-transform-chance", 1)) {
-                    OriginSwapper.setOrigin(player, OriginSwapper.getOrigin(player), PlayerSwapOriginEvent.SwapReason.DIED, false);
+                    OriginSwapper.setOrigin(player, OriginSwapper.getOrigin(player, "origin"), PlayerSwapOriginEvent.SwapReason.DIED, false, "origin");
                     player.sendMessage(Component.text("You have transformed into a Vampire!").color(NamedTextColor.RED));
                 }
             });

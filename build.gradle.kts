@@ -1,11 +1,12 @@
 plugins {
     id("java")
-    id("io.papermc.paperweight.userdev") version "1.7.1" apply false
+    id("io.papermc.paperweight.userdev") version "2.0.0-beta.11" apply false
     id("com.github.johnrengelman.shadow") version "8.1.1"
+    kotlin("jvm") version "2.1.10"
 }
 
 group = "com.starshootercity.originsfantasy"
-version = "1.0.21"
+version = "1.0.23"
 
 repositories {
     mavenCentral()
@@ -20,6 +21,7 @@ dependencies {
     implementation(project(":version"))
     implementation(project(":1.21.1", "reobf"))
     implementation(project(":1.21.3", "reobf"))
+    implementation(project(":1.21.4", "reobf"))
     implementation(project(":1.21", "reobf"))
     implementation(project(":1.20.6", "reobf"))
     implementation(project(":1.20.4", "reobf"))
@@ -32,6 +34,11 @@ dependencies {
     implementation(project(":1.19.2", "reobf"))
     implementation(project(":1.19.3", "reobf"))
     implementation(project(":1.19.4", "reobf"))
+    implementation(kotlin("stdlib-jdk8"))
+}
+
+java {
+    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
 }
 
 tasks {
@@ -40,10 +47,7 @@ tasks {
     }
 }
 
-java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
-}
-
 tasks.test {
     useJUnitPlatform()
 }
+

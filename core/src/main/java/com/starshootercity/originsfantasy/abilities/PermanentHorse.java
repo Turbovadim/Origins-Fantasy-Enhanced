@@ -100,7 +100,7 @@ public class PermanentHorse implements VisibleAbility, Listener {
                 Horse horse = (Horse) player.getWorld().spawnEntity(player.getLocation(), EntityType.HORSE);
                 AttributeInstance jump = horse.getAttribute(OriginsFantasy.getNMSInvoker().getGenericJumpStrengthAttribute());
                 AttributeInstance speed = horse.getAttribute(OriginsReborn.getNMSInvoker().getMovementSpeedAttribute());
-                Origin origin = OriginSwapper.getOrigin(player);
+                Origin origin = OriginSwapper.getOrigin(player, "origin");
                 if (origin != null) {
                     if (origin.hasAbility(Key.key("fantasyorigins:super_jump")) && jump != null) jump.setBaseValue(1);
                     if (origin.hasAbility(Key.key("fantasyorigins:increased_speed")) && speed != null)speed.setBaseValue(0.4);
