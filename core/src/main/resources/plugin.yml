@@ -1,9 +1,9 @@
-name: Origins-Fantasy
+name: Origins-Fantasy-Enhanced
 version: 1.0.21
 main: com.starshootercity.originsfantasy.OriginsFantasy
 description: Origins-Reborn addon adding fantasy themed origins
 api-version: '1.19'
 author: cometcake575
 depend:
-  - Origins-Reborn
+  - Origins-Reborn-Enhanced
   - EnderaLib
