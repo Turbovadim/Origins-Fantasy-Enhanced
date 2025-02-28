@@ -1,41 +1,41 @@
-package com.starshootercity.originsfantasy.abilities;
+package com.starshootercity.originsfantasy.abilities
 
-import com.destroystokyo.paper.event.server.ServerTickEndEvent;
-import com.starshootercity.OriginSwapper;
-import com.starshootercity.abilities.AbilityRegister;
-import com.starshootercity.abilities.VisibleAbility;
-import net.kyori.adventure.key.Key;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-import org.jetbrains.annotations.NotNull;
+import com.destroystokyo.paper.event.server.ServerTickEndEvent
+import com.starshootercity.OriginSwapper.LineData
+import com.starshootercity.OriginSwapper.LineData.LineComponent
+import com.starshootercity.OriginSwapper.LineData.LineComponent.LineType
+import com.starshootercity.abilities.AbilityRegister
+import com.starshootercity.abilities.VisibleAbility
+import net.kyori.adventure.key.Key
+import org.bukkit.Bukkit
+import org.bukkit.event.EventHandler
+import org.bukkit.event.Listener
+import org.bukkit.potion.PotionEffect
+import org.bukkit.potion.PotionEffectType
 
-import java.util.List;
-
-public class InfiniteNightVision implements VisibleAbility, Listener {
-    @Override
-    public @NotNull List<OriginSwapper.LineData.LineComponent> getDescription() {
-        return OriginSwapper.LineData.makeLineFor("You can see in the dark after generations of evolution.", OriginSwapper.LineData.LineComponent.LineType.DESCRIPTION);
+class InfiniteNightVision : VisibleAbility, Listener {
+    override fun getDescription(): MutableList<LineComponent?> {
+        return LineData.makeLineFor("You can see in the dark after generations of evolution.", LineType.DESCRIPTION)
     }
 
-    @Override
-    public @NotNull List<OriginSwapper.LineData.LineComponent> getTitle() {
-        return OriginSwapper.LineData.makeLineFor("Dark Eyes", OriginSwapper.LineData.LineComponent.LineType.TITLE);
+    override fun getTitle(): MutableList<LineComponent?> {
+        return LineData.makeLineFor("Dark Eyes", LineType.TITLE)
     }
 
-    @Override
-    public @NotNull Key getKey() {
-        return Key.key("fantasyorigins:infinite_night_vision");
+    override fun getKey(): Key {
+        return Key.key("fantasyorigins:infinite_night_vision")
     }
+
+    private val nightVisionEffect = PotionEffect(PotionEffectType.NIGHT_VISION, 240, 0)
 
     @EventHandler
-    public void onServerTickEnd(ServerTickEndEvent event) {
-        if (event.getTickNumber() % 15 != 0) return;
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            AbilityRegister.runForAbility(player, getKey(), () -> player.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, 240, 0)));
+    fun onServerTickEnd(event: ServerTickEndEvent) {
+        if (event.tickNumber % 15 != 0) return
+
+        Bukkit.getOnlinePlayers().forEach { player ->
+            AbilityRegister.runForAbility(player, key) {
+                player.addPotionEffect(nightVisionEffect)
+            }
         }
     }
 }

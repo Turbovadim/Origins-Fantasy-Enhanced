@@ -1,51 +1,61 @@
-package com.starshootercity.originsfantasy.abilities;
+package com.starshootercity.originsfantasy.abilities
 
-import com.destroystokyo.paper.event.server.ServerTickEndEvent;
-import com.starshootercity.OriginSwapper;
-import com.starshootercity.abilities.AbilityRegister;
-import com.starshootercity.abilities.VisibleAbility;
-import net.kyori.adventure.key.Key;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.EnderCrystal;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.jetbrains.annotations.NotNull;
+import com.destroystokyo.paper.event.server.ServerTickEndEvent
+import com.starshootercity.OriginSwapper.LineData
+import com.starshootercity.OriginSwapper.LineData.LineComponent
+import com.starshootercity.OriginSwapper.LineData.LineComponent.LineType
+import com.starshootercity.abilities.AbilityRegister
+import com.starshootercity.abilities.VisibleAbility
+import net.kyori.adventure.key.Key
+import org.bukkit.Bukkit
+import org.bukkit.entity.EnderCrystal
+import org.bukkit.event.EventHandler
+import org.bukkit.event.Listener
+import kotlin.math.min
 
-import java.util.List;
-
-public class EndCrystalHealing implements VisibleAbility, Listener {
-    @Override
-    public @NotNull List<OriginSwapper.LineData.LineComponent> getDescription() {
-        return OriginSwapper.LineData.makeLineFor("You can regenerate health from nearby End Crystals.", OriginSwapper.LineData.LineComponent.LineType.DESCRIPTION);
+class EndCrystalHealing : VisibleAbility, Listener {
+    override fun getDescription(): MutableList<LineComponent?> {
+        return LineData.makeLineFor("You can regenerate health from nearby End Crystals.", LineType.DESCRIPTION)
     }
 
-    @Override
-    public @NotNull List<OriginSwapper.LineData.LineComponent> getTitle() {
-        return OriginSwapper.LineData.makeLineFor("Crystal Healer", OriginSwapper.LineData.LineComponent.LineType.TITLE);
+    override fun getTitle(): MutableList<LineComponent?> {
+        return LineData.makeLineFor("Crystal Healer", LineType.TITLE)
     }
 
-    @Override
-    public @NotNull Key getKey() {
-        return Key.key("fantasyorigins:end_crystal_healing");
+    override fun getKey(): Key {
+        return Key.key("fantasyorigins:end_crystal_healing")
+    }
+
+    companion object {
+        const val SEARCH_RADIUS = 48.0
+        const val MAX_DISTANCE_SQ = 144.0
     }
 
     @EventHandler
-    public void onServerTickEnd(ServerTickEndEvent event) {
-        if (event.getTickNumber() % 5 != 0) return;
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            for (Entity entity : player.getNearbyEntities(48, 48, 48)) {
-                if (entity instanceof EnderCrystal crystal) {
-                    if (entity.getLocation().distance(player.getLocation()) > 12) crystal.setBeamTarget(null);
-                    else {
-                        AbilityRegister.runForAbility(player, getKey(), () -> {
-                            crystal.setBeamTarget(player.getLocation().clone().subtract(0, 1, 0));
-                            player.setHealth(Math.min(20, player.getHealth() + 1));
-                        }, () -> crystal.setBeamTarget(null));
-                    }
+    fun onServerTickEnd(event: ServerTickEndEvent) {
+        if (event.tickNumber % 5 != 0) return
+        Bukkit.getOnlinePlayers().forEach { player ->
+            val playerLoc = player.location
+            AbilityRegister.runForAbility(
+                player,
+                key,
+                Runnable {
+                    player.getNearbyEntities(SEARCH_RADIUS, SEARCH_RADIUS, SEARCH_RADIUS)
+                        .filterIsInstance<EnderCrystal>()
+                        .filter { it.location.distanceSquared(playerLoc) <= MAX_DISTANCE_SQ }
+                        .forEach { crystal ->
+                            crystal.beamTarget = playerLoc.clone().apply { y -= 1.0 }
+                            player.health = min(20.0, player.health + 1)
+                        }
+                },
+                Runnable {
+                    player.getNearbyEntities(SEARCH_RADIUS, SEARCH_RADIUS, SEARCH_RADIUS)
+                        .filterIsInstance<EnderCrystal>()
+                        .forEach { it.beamTarget = null }
                 }
-            }
+            )
         }
     }
+
+
 }

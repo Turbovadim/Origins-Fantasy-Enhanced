@@ -1,41 +1,44 @@
-package com.starshootercity.originsfantasy.abilities;
+package com.starshootercity.originsfantasy.abilities
 
-import com.destroystokyo.paper.event.server.ServerTickEndEvent;
-import com.starshootercity.OriginSwapper;
-import com.starshootercity.OriginsReborn;
-import com.starshootercity.abilities.AbilityRegister;
-import com.starshootercity.abilities.VisibleAbility;
-import net.kyori.adventure.key.Key;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.potion.PotionEffect;
-import org.jetbrains.annotations.NotNull;
+import com.destroystokyo.paper.event.server.ServerTickEndEvent
+import com.starshootercity.OriginSwapper.LineData
+import com.starshootercity.OriginSwapper.LineData.LineComponent
+import com.starshootercity.OriginSwapper.LineData.LineComponent.LineType
+import com.starshootercity.OriginsReborn
+import com.starshootercity.abilities.AbilityRegister
+import com.starshootercity.abilities.VisibleAbility
+import net.kyori.adventure.key.Key
+import org.bukkit.Bukkit
+import org.bukkit.event.EventHandler
+import org.bukkit.event.Listener
+import org.bukkit.potion.PotionEffect
 
-import java.util.List;
-
-public class InfiniteHaste implements VisibleAbility, Listener {
-    @Override
-    public @NotNull List<OriginSwapper.LineData.LineComponent> getDescription() {
-        return OriginSwapper.LineData.makeLineFor("You're well trained in mining, so are much faster than a regular human.", OriginSwapper.LineData.LineComponent.LineType.DESCRIPTION);
+class InfiniteHaste : VisibleAbility, Listener {
+    override fun getDescription(): MutableList<LineComponent?> {
+        return LineData.makeLineFor(
+            "You're well trained in mining, so are much faster than a regular human.",
+            LineType.DESCRIPTION
+        )
     }
 
-    @Override
-    public @NotNull List<OriginSwapper.LineData.LineComponent> getTitle() {
-        return OriginSwapper.LineData.makeLineFor("Fast Miner", OriginSwapper.LineData.LineComponent.LineType.TITLE);
+    override fun getTitle(): MutableList<LineComponent?> {
+        return LineData.makeLineFor("Fast Miner", LineType.TITLE)
     }
 
-    @Override
-    public @NotNull Key getKey() {
-        return Key.key("fantasyorigins:infinite_haste");
+    override fun getKey(): Key {
+        return Key.key("fantasyorigins:infinite_haste")
     }
 
     @EventHandler
-    public void onServerTickEnd(ServerTickEndEvent event) {
-        if (event.getTickNumber() % 20 != 0) return;
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            AbilityRegister.runForAbility(player, getKey(), () -> player.addPotionEffect(new PotionEffect(OriginsReborn.getNMSInvoker().getHasteEffect(), 30, 1)));
+    fun onServerTickEnd(event: ServerTickEndEvent) {
+        if (event.tickNumber % 20 != 0) return
+
+        val hasteEffectType = OriginsReborn.NMSInvoker.hasteEffect
+        Bukkit.getOnlinePlayers().forEach { player ->
+            AbilityRegister.runForAbility(player, key) {
+                player.addPotionEffect(PotionEffect(hasteEffectType, 30, 1))
+            }
         }
     }
+
 }
