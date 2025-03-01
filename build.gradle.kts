@@ -41,6 +41,15 @@ java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(21))
 }
 
+allprojects {
+    tasks.withType<ProcessResources> {
+        inputs.property("version", rootProject.version)
+        filesMatching("**plugin.yml") {
+            expand("version" to rootProject.version)
+        }
+    }
+}
+
 tasks.shadowJar {
     dependencies {
         exclude(dependency("com.github.Turbovadim:EnderaLib:1.4.2"))
