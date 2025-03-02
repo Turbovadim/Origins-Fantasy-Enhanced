@@ -1,86 +1,83 @@
-package com.starshootercity.originsfantasy.abilities;
+package com.starshootercity.originsfantasy.abilities
 
-import com.starshootercity.OriginSwapper;
-import com.starshootercity.OriginsReborn;
-import com.starshootercity.abilities.Ability;
-import com.starshootercity.abilities.AttributeModifierAbility;
-import com.starshootercity.abilities.MultiAbility;
-import com.starshootercity.abilities.VisibleAbility;
-import com.starshootercity.originsfantasy.OriginsFantasy;
-import net.kyori.adventure.key.Key;
-import org.bukkit.attribute.Attribute;
-import org.bukkit.attribute.AttributeModifier;
-import org.jetbrains.annotations.NotNull;
+import com.starshootercity.OriginSwapper.LineData
+import com.starshootercity.OriginSwapper.LineData.LineComponent
+import com.starshootercity.OriginSwapper.LineData.LineComponent.LineType
+import com.starshootercity.OriginsReborn
+import com.starshootercity.abilities.Ability
+import com.starshootercity.abilities.AttributeModifierAbility
+import com.starshootercity.abilities.MultiAbility
+import com.starshootercity.abilities.VisibleAbility
+import com.starshootercity.originsfantasy.OriginsFantasy.Companion.NMSInvoker
+import net.kyori.adventure.key.Key
+import org.bukkit.attribute.Attribute
+import org.bukkit.attribute.AttributeModifier
 
-import java.util.List;
-
-public class HeavyBlow implements VisibleAbility, MultiAbility {
-    @Override
-    public @NotNull List<OriginSwapper.LineData.LineComponent> getDescription() {
-        return OriginSwapper.LineData.makeLineFor("Your attacks are stronger than humans, but you have a longer attack cooldown.", OriginSwapper.LineData.LineComponent.LineType.DESCRIPTION);
+class HeavyBlow : VisibleAbility, MultiAbility {
+    override fun getDescription(): MutableList<LineComponent?> {
+        return LineData.makeLineFor(
+            "Your attacks are stronger than humans, but you have a longer attack cooldown.",
+            LineType.DESCRIPTION
+        )
     }
 
-    @Override
-    public @NotNull List<OriginSwapper.LineData.LineComponent> getTitle() {
-        return OriginSwapper.LineData.makeLineFor("Heavy Blow", OriginSwapper.LineData.LineComponent.LineType.TITLE);
+    override fun getTitle(): MutableList<LineComponent?> {
+        return LineData.makeLineFor("Heavy Blow", LineType.TITLE)
     }
 
-    @Override
-    public @NotNull Key getKey() {
-        return Key.key("fantasyorigins:heavy_blow");
+    override fun getKey(): Key {
+        return Key.key("fantasyorigins:heavy_blow")
     }
 
-    @Override
-    public List<Ability> getAbilities() {
-        return List.of(IncreasedDamage.increasedDamage, IncreasedCooldown.increasedCooldown);
+    override fun getAbilities(): MutableList<Ability> {
+        return mutableListOf(
+            IncreasedDamage.Companion.increasedDamage,
+            IncreasedCooldown.Companion.increasedCooldown
+        )
     }
 
 
-    public static class IncreasedDamage implements AttributeModifierAbility {
-        public static IncreasedDamage increasedDamage = new IncreasedDamage();
-
-        @Override
-        public @NotNull Attribute getAttribute() {
-            return OriginsReborn.getNMSInvoker().getAttackDamageAttribute();
+    class IncreasedDamage : AttributeModifierAbility {
+        override fun getAttribute(): Attribute {
+            return OriginsReborn.NMSInvoker.attackDamageAttribute
         }
 
-        @Override
-        public double getAmount() {
-            return 1.2;
+        override fun getAmount(): Double {
+            return 1.2
         }
 
-        @Override
-        public AttributeModifier.@NotNull Operation getOperation() {
-            return AttributeModifier.Operation.MULTIPLY_SCALAR_1;
+        override fun getOperation(): AttributeModifier.Operation {
+            return AttributeModifier.Operation.MULTIPLY_SCALAR_1
         }
 
-        @Override
-        public @NotNull Key getKey() {
-            return Key.key("fantasyorigins:increased_damage");
+        override fun getKey(): Key {
+            return Key.key("fantasyorigins:increased_damage")
+        }
+
+        companion object {
+            var increasedDamage: IncreasedDamage = IncreasedDamage()
         }
     }
 
-    public static class IncreasedCooldown implements AttributeModifierAbility {
-        public static IncreasedCooldown increasedCooldown = new IncreasedCooldown();
-
-        @Override
-        public @NotNull Attribute getAttribute() {
-            return OriginsFantasy.getNMSInvoker().getAttackSpeedAttribute();
+    class IncreasedCooldown : AttributeModifierAbility {
+        override fun getAttribute(): Attribute {
+            return NMSInvoker.getAttackSpeedAttribute()
         }
 
-        @Override
-        public double getAmount() {
-            return -0.4;
+        override fun getAmount(): Double {
+            return -0.4
         }
 
-        @Override
-        public AttributeModifier.@NotNull Operation getOperation() {
-            return AttributeModifier.Operation.MULTIPLY_SCALAR_1;
+        override fun getOperation(): AttributeModifier.Operation {
+            return AttributeModifier.Operation.MULTIPLY_SCALAR_1
         }
 
-        @Override
-        public @NotNull Key getKey() {
-            return Key.key("fantasyorigins:increased_cooldown");
+        override fun getKey(): Key {
+            return Key.key("fantasyorigins:increased_cooldown")
+        }
+
+        companion object {
+            var increasedCooldown: IncreasedCooldown = IncreasedCooldown()
         }
     }
 }

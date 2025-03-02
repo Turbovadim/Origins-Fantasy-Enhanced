@@ -1,96 +1,88 @@
-package com.starshootercity.originsfantasy.abilities;
+package com.starshootercity.originsfantasy.abilities
 
-import com.starshootercity.OriginSwapper;
-import com.starshootercity.OriginsReborn;
-import com.starshootercity.abilities.Ability;
-import com.starshootercity.abilities.AttributeModifierAbility;
-import com.starshootercity.abilities.MultiAbility;
-import com.starshootercity.abilities.VisibleAbility;
-import net.kyori.adventure.key.Key;
-import org.bukkit.World;
-import org.bukkit.attribute.Attribute;
-import org.bukkit.attribute.AttributeModifier;
-import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
+import com.starshootercity.OriginSwapper.LineData
+import com.starshootercity.OriginSwapper.LineData.LineComponent
+import com.starshootercity.OriginSwapper.LineData.LineComponent.LineType
+import com.starshootercity.OriginsReborn
+import com.starshootercity.abilities.Ability
+import com.starshootercity.abilities.AttributeModifierAbility
+import com.starshootercity.abilities.MultiAbility
+import com.starshootercity.abilities.VisibleAbility
+import net.kyori.adventure.key.Key
+import org.bukkit.World
+import org.bukkit.attribute.Attribute
+import org.bukkit.attribute.AttributeModifier
+import org.bukkit.entity.Player
 
-import java.util.List;
-
-public class EndBoost implements VisibleAbility, MultiAbility {
-    @Override
-    public @NotNull List<OriginSwapper.LineData.LineComponent> getDescription() {
-        return OriginSwapper.LineData.makeLineFor("Your natural habitat is the end, so you have more health and are stronger when you are there.", OriginSwapper.LineData.LineComponent.LineType.DESCRIPTION);
+class EndBoost : VisibleAbility, MultiAbility {
+    override fun getDescription(): MutableList<LineComponent?> {
+        return LineData.makeLineFor(
+            "Your natural habitat is the end, so you have more health and are stronger when you are there.",
+            LineType.DESCRIPTION
+        )
     }
 
-    @Override
-    public @NotNull List<OriginSwapper.LineData.LineComponent> getTitle() {
-        return OriginSwapper.LineData.makeLineFor("End Inhabitant", OriginSwapper.LineData.LineComponent.LineType.TITLE);
+    override fun getTitle(): MutableList<LineComponent?> {
+        return LineData.makeLineFor("End Inhabitant", LineType.TITLE)
     }
 
-    @Override
-    public @NotNull Key getKey() {
-        return Key.key("fantasyorigins:end_boost");
+    override fun getKey(): Key {
+        return Key.key("fantasyorigins:end_boost")
     }
 
-    @Override
-    public List<Ability> getAbilities() {
-        return List.of(EndStrength.endStrength, EndHealth.endHealth);
+    override fun getAbilities(): MutableList<Ability> {
+        return mutableListOf(EndStrength.Companion.endStrength, EndHealth.Companion.endHealth)
     }
 
-    public static class EndStrength implements AttributeModifierAbility {
-        public static EndStrength endStrength = new EndStrength();
-
-        @Override
-        public @NotNull Attribute getAttribute() {
-            return OriginsReborn.getNMSInvoker().getAttackDamageAttribute();
+    class EndStrength : AttributeModifierAbility {
+        override fun getAttribute(): Attribute {
+            return OriginsReborn.NMSInvoker.attackDamageAttribute
         }
 
-        @Override
-        public double getAmount() {
-            return 0;
+        override fun getAmount(): Double {
+            return 0.0
         }
 
-        @Override
-        public double getChangedAmount(Player player) {
-            return player.getWorld().getEnvironment() == World.Environment.THE_END ? 1.6 : 0;
+        override fun getChangedAmount(player: Player): Double {
+            return if (player.world.environment == World.Environment.THE_END) 1.6 else 0.0
         }
 
-        @Override
-        public AttributeModifier.@NotNull Operation getOperation() {
-            return AttributeModifier.Operation.MULTIPLY_SCALAR_1;
+        override fun getOperation(): AttributeModifier.Operation {
+            return AttributeModifier.Operation.MULTIPLY_SCALAR_1
         }
 
-        @Override
-        public @NotNull Key getKey() {
-            return Key.key("fantasyorigins:end_strength");
+        override fun getKey(): Key {
+            return Key.key("fantasyorigins:end_strength")
+        }
+
+        companion object {
+            var endStrength: EndStrength = EndStrength()
         }
     }
 
-    public static class EndHealth implements AttributeModifierAbility {
-        public static EndHealth endHealth = new EndHealth();
-
-        @Override
-        public @NotNull Key getKey() {
-            return Key.key("fantasyorigins:end_health");
+    class EndHealth : AttributeModifierAbility {
+        override fun getKey(): Key {
+            return Key.key("fantasyorigins:end_health")
         }
 
-        @Override
-        public @NotNull Attribute getAttribute() {
-            return OriginsReborn.getNMSInvoker().getMaxHealthAttribute();
+        override fun getAttribute(): Attribute {
+            return OriginsReborn.NMSInvoker.maxHealthAttribute
         }
 
-        @Override
-        public double getAmount() {
-            return 0;
+        override fun getAmount(): Double {
+            return 0.0
         }
 
-        @Override
-        public double getChangedAmount(Player player) {
-            return player.getWorld().getEnvironment() == World.Environment.THE_END ? 20 : 0;
+        override fun getChangedAmount(player: Player): Double {
+            return (if (player.world.environment == World.Environment.THE_END) 20 else 0).toDouble()
         }
 
-        @Override
-        public AttributeModifier.@NotNull Operation getOperation() {
-            return AttributeModifier.Operation.ADD_NUMBER;
+        override fun getOperation(): AttributeModifier.Operation {
+            return AttributeModifier.Operation.ADD_NUMBER
+        }
+
+        companion object {
+            var endHealth: EndHealth = EndHealth()
         }
     }
 }

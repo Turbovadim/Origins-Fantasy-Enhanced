@@ -1,48 +1,51 @@
-package com.starshootercity.originsfantasy.abilities;
+package com.starshootercity.originsfantasy.abilities
 
-import com.starshootercity.OriginSwapper;
-import com.starshootercity.abilities.AbilityRegister;
-import com.starshootercity.abilities.VisibleAbility;
-import net.kyori.adventure.key.Key;
-import org.bukkit.Material;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-import org.jetbrains.annotations.NotNull;
+import com.starshootercity.OriginSwapper.LineData
+import com.starshootercity.OriginSwapper.LineData.LineComponent
+import com.starshootercity.OriginSwapper.LineData.LineComponent.LineType
+import com.starshootercity.abilities.AbilityRegister
+import com.starshootercity.abilities.VisibleAbility
+import net.kyori.adventure.key.Key
+import org.bukkit.Material
+import org.bukkit.event.EventHandler
+import org.bukkit.event.Listener
+import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.inventory.EquipmentSlot
+import org.bukkit.potion.PotionEffect
+import org.bukkit.potion.PotionEffectType
 
-import java.util.List;
-
-public class Chime implements VisibleAbility, Listener {
-    @Override
-    public @NotNull List<OriginSwapper.LineData.LineComponent> getDescription() {
-        return OriginSwapper.LineData.makeLineFor("You can absorb the chime of amethyst shards to regenerate health.", OriginSwapper.LineData.LineComponent.LineType.DESCRIPTION);
+class Chime : VisibleAbility, Listener {
+    override fun getDescription(): MutableList<LineComponent?> {
+        return LineData.makeLineFor(
+            "You can absorb the chime of amethyst shards to regenerate health.",
+            LineType.DESCRIPTION
+        )
     }
 
-    @Override
-    public @NotNull List<OriginSwapper.LineData.LineComponent> getTitle() {
-        return OriginSwapper.LineData.makeLineFor("Chime", OriginSwapper.LineData.LineComponent.LineType.TITLE);
+    override fun getTitle(): MutableList<LineComponent?> {
+        return LineData.makeLineFor("Chime", LineType.TITLE)
     }
 
-    @Override
-    public @NotNull Key getKey() {
-        return Key.key("fantasyorigins:chime");
+    override fun getKey(): Key {
+        return Key.key("fantasyorigins:chime")
     }
 
     @EventHandler
-    public void onPlayerInteract(PlayerInteractEvent event) {
-        AbilityRegister.runForAbility(event.getPlayer(), getKey(), () -> {
-            if (!event.getAction().isRightClick()) return;
-            if (event.getItem() == null) return;
-            if (event.getItem().getType() == Material.AMETHYST_SHARD) {
-                event.getItem().setAmount(event.getItem().getAmount() - 1);
-                event.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 900, 1));
-                if (event.getHand() == null) return;
-                if (event.getHand() == EquipmentSlot.HAND) event.getPlayer().swingMainHand();
-                else event.getPlayer().swingOffHand();
+    fun onPlayerInteract(event: PlayerInteractEvent) {
+        if (!event.action.isRightClick) return
+        val item = event.item ?: return
+        if (item.type != Material.AMETHYST_SHARD) return
+
+        val player = event.player
+        AbilityRegister.runForAbility(player, key) {
+            item.amount--
+            player.addPotionEffect(PotionEffect(PotionEffectType.REGENERATION, 900, 1))
+            event.hand?.let { hand ->
+                when (hand) {
+                    EquipmentSlot.HAND -> player.swingMainHand()
+                    else -> player.swingOffHand()
+                }
             }
-        });
+        }
     }
 }

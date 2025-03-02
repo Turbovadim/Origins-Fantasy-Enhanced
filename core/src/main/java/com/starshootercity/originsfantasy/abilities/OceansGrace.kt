@@ -1,101 +1,90 @@
-package com.starshootercity.originsfantasy.abilities;
+package com.starshootercity.originsfantasy.abilities
 
-import com.starshootercity.OriginSwapper;
-import com.starshootercity.OriginsReborn;
-import com.starshootercity.abilities.Ability;
-import com.starshootercity.abilities.AttributeModifierAbility;
-import com.starshootercity.abilities.MultiAbility;
-import com.starshootercity.abilities.VisibleAbility;
-import net.kyori.adventure.key.Key;
-import org.bukkit.attribute.Attribute;
-import org.bukkit.attribute.AttributeModifier;
-import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
+import com.starshootercity.OriginSwapper.LineData
+import com.starshootercity.OriginSwapper.LineData.LineComponent
+import com.starshootercity.OriginSwapper.LineData.LineComponent.LineType
+import com.starshootercity.OriginsReborn
+import com.starshootercity.abilities.AttributeModifierAbility
+import com.starshootercity.abilities.MultiAbility
+import com.starshootercity.abilities.VisibleAbility
+import net.kyori.adventure.key.Key
+import org.bukkit.attribute.Attribute
+import org.bukkit.attribute.AttributeModifier
+import org.bukkit.entity.Player
 
-import java.util.List;
-
-public class OceansGrace implements VisibleAbility, MultiAbility {
-    @Override
-    public @NotNull List<OriginSwapper.LineData.LineComponent> getDescription() {
-        return OriginSwapper.LineData.makeLineFor("You are a part of the water, so you have extra health and deal extra damage when in water or rain.", OriginSwapper.LineData.LineComponent.LineType.DESCRIPTION);
+class OceansGrace : VisibleAbility, MultiAbility {
+    override fun getDescription(): MutableList<LineComponent?> {
+        return LineData.makeLineFor(
+            "You are a part of the water, so you have extra health and deal extra damage when in water or rain.",
+            LineType.DESCRIPTION
+        )
     }
 
-    @Override
-    public @NotNull List<OriginSwapper.LineData.LineComponent> getTitle() {
-        return OriginSwapper.LineData.makeLineFor("Ocean's Grace", OriginSwapper.LineData.LineComponent.LineType.TITLE);
+    override fun getTitle(): MutableList<LineComponent?> {
+        return LineData.makeLineFor("Ocean's Grace", LineType.TITLE)
     }
 
-    @Override
-    public @NotNull Key getKey() {
-        return Key.key("fantasyorigins:oceans_grace");
+    override fun getKey(): Key {
+        return Key.key("fantasyorigins:oceans_grace")
     }
 
-    @Override
-    public List<Ability> getAbilities() {
-        return List.of(WaterStrength.waterStrength, WaterHealth.waterHealth);
-    }
+    override fun getAbilities() = mutableListOf(WaterStrength.Companion.waterStrength, WaterHealth.Companion.waterHealth)
 
-    public static class WaterHealth implements AttributeModifierAbility {
-        public static WaterHealth waterHealth = new WaterHealth();
-
-        @Override
-        public @NotNull Attribute getAttribute() {
-            return OriginsReborn.getNMSInvoker().getMaxHealthAttribute();
+    class WaterHealth : AttributeModifierAbility {
+        override fun getAttribute(): Attribute {
+            return OriginsReborn.NMSInvoker.maxHealthAttribute
         }
 
-        @Override
-        public double getAmount() {
-            return 0;
+        override fun getAmount(): Double {
+            return 0.0
         }
 
-        @Override
-        public double getChangedAmount(Player player) {
-            if (player.isInWaterOrRainOrBubbleColumn()) {
-                return 4;
+        override fun getChangedAmount(player: Player): Double {
+            if (player.isInWaterOrRainOrBubbleColumn) {
+                return 4.0
             }
-            return 0;
+            return 0.0
         }
 
-        @Override
-        public AttributeModifier.@NotNull Operation getOperation() {
-            return AttributeModifier.Operation.ADD_NUMBER;
+        override fun getOperation(): AttributeModifier.Operation {
+            return AttributeModifier.Operation.ADD_NUMBER
         }
 
-        @Override
-        public @NotNull Key getKey() {
-            return Key.key("fantasyorigins:water_health");
+        override fun getKey(): Key {
+            return Key.key("fantasyorigins:water_health")
+        }
+
+        companion object {
+            var waterHealth: WaterHealth = WaterHealth()
         }
     }
 
-    public static class WaterStrength implements AttributeModifierAbility {
-        public static WaterStrength waterStrength = new WaterStrength();
-
-        @Override
-        public @NotNull Key getKey() {
-            return Key.key("fantasyorigins:water_strength");
+    class WaterStrength : AttributeModifierAbility {
+        override fun getKey(): Key {
+            return Key.key("fantasyorigins:water_strength")
         }
 
-        @Override
-        public @NotNull Attribute getAttribute() {
-            return OriginsReborn.getNMSInvoker().getAttackDamageAttribute();
+        override fun getAttribute(): Attribute {
+            return OriginsReborn.NMSInvoker.attackDamageAttribute
         }
 
-        @Override
-        public double getAmount() {
-            return 0;
+        override fun getAmount(): Double {
+            return 0.0
         }
 
-        @Override
-        public double getChangedAmount(Player player) {
-            if (player.isInWaterOrRainOrBubbleColumn()) {
-                return 1.4;
+        override fun getChangedAmount(player: Player): Double {
+            if (player.isInWaterOrRainOrBubbleColumn) {
+                return 1.4
             }
-            return 0;
+            return 0.0
         }
 
-        @Override
-        public AttributeModifier.@NotNull Operation getOperation() {
-            return AttributeModifier.Operation.MULTIPLY_SCALAR_1;
+        override fun getOperation(): AttributeModifier.Operation {
+            return AttributeModifier.Operation.MULTIPLY_SCALAR_1
+        }
+
+        companion object {
+            var waterStrength: WaterStrength = WaterStrength()
         }
     }
 }

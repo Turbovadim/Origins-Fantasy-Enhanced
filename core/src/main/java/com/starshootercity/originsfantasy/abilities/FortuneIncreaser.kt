@@ -1,74 +1,74 @@
-package com.starshootercity.originsfantasy.abilities;
+package com.starshootercity.originsfantasy.abilities
 
-import com.starshootercity.OriginSwapper;
-import com.starshootercity.abilities.AbilityRegister;
-import com.starshootercity.abilities.VisibleAbility;
-import com.starshootercity.originsfantasy.OriginsFantasy;
-import net.kyori.adventure.key.Key;
-import org.bukkit.entity.Item;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockDropItemEvent;
-import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
+import com.starshootercity.OriginSwapper.LineData
+import com.starshootercity.OriginSwapper.LineData.LineComponent
+import com.starshootercity.OriginSwapper.LineData.LineComponent.LineType
+import com.starshootercity.abilities.AbilityRegister
+import com.starshootercity.abilities.VisibleAbility
+import com.starshootercity.originsfantasy.OriginsFantasy.Companion.NMSInvoker
+import net.kyori.adventure.key.Key
+import org.bukkit.entity.Player
+import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
+import org.bukkit.event.Listener
+import org.bukkit.event.block.BlockBreakEvent
+import org.bukkit.event.block.BlockDropItemEvent
+import org.bukkit.inventory.ItemStack
+import kotlin.math.max
 
-import java.util.*;
-
-public class FortuneIncreaser implements VisibleAbility, Listener {
-    @Override
-    public @NotNull List<OriginSwapper.LineData.LineComponent> getDescription() {
-        return OriginSwapper.LineData.makeLineFor("Your care and mastery in the art of extracting minerals results in a much higher yield from ores than other creatures.", OriginSwapper.LineData.LineComponent.LineType.DESCRIPTION);
+class FortuneIncreaser : VisibleAbility, Listener {
+    override fun getDescription(): MutableList<LineComponent?> {
+        return LineData.makeLineFor(
+            "Your care and mastery in the art of extracting minerals results in a much higher yield from ores than other creatures.",
+            LineType.DESCRIPTION
+        )
     }
 
-    @Override
-    public @NotNull List<OriginSwapper.LineData.LineComponent> getTitle() {
-        return OriginSwapper.LineData.makeLineFor("Careful Miner", OriginSwapper.LineData.LineComponent.LineType.TITLE);
+    override fun getTitle(): MutableList<LineComponent?> {
+        return LineData.makeLineFor("Careful Miner", LineType.TITLE)
     }
 
-    @Override
-    public @NotNull Key getKey() {
-        return Key.key("fantasyorigins:fortune_increaser");
+    override fun getKey(): Key {
+        return Key.key("fantasyorigins:fortune_increaser")
     }
+
+    private val blocks = mutableMapOf<Player, MutableList<ItemStack>>()
 
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onBlockDropItem(BlockDropItemEvent event) {
-        if (event.getPlayer().getInventory().getItemInMainHand().getItemMeta() == null) return;
-        AbilityRegister.runForAbility(event.getPlayer(), getKey(), () -> {
-            List<ItemStack> items = new ArrayList<>(blocks.getOrDefault(event.getPlayer(), List.of()));
-            List<ItemStack> otherItems = new ArrayList<>();
-            for (Item item : event.getItems()) {
-                otherItems.add(item.getItemStack());
-            }
-            event.getItems().clear();
-            for (ItemStack i : otherItems) {
-                for (int itemIndex = 0; itemIndex < items.size(); itemIndex++) {
-                    ItemStack item = items.get(itemIndex);
-                    if (item.getAmount() == 0) continue;
-                    if (i.getType().equals(item.getType()) && i.getItemMeta().equals(item.getItemMeta())) {
-                        int amount = item.getAmount() - i.getAmount();
-                        item.setAmount(Math.max(0, amount));
+    fun onBlockDropItem(event: BlockDropItemEvent) {
+        if (event.player.inventory.itemInMainHand.itemMeta == null) return
+
+        AbilityRegister.runForAbility(event.player, key) {
+            val storedItems = blocks[event.player]?.toMutableList() ?: mutableListOf()
+
+            val droppedItems = event.items.map { it.itemStack }
+            event.items.clear()
+
+            droppedItems.forEach { dropped ->
+                storedItems.forEachIndexed { index, stored ->
+                    if (stored.amount > 0 && stored.type == dropped.type && stored.itemMeta == dropped.itemMeta) {
+                        stored.amount = max(0, stored.amount - dropped.amount)
+                        storedItems[index] = stored
                     }
-                    items.set(itemIndex, item);
                 }
             }
-            items.addAll(otherItems);
-            items.removeIf(itemStack -> itemStack.getAmount() <= 0);
-            for (ItemStack item : items) {
-                event.getItems().add(event.getBlock().getWorld().dropItem(event.getBlock().getLocation().clone().add(0.5, 0, 0.5), item));
+
+            storedItems.addAll(droppedItems)
+            storedItems.removeIf { it.amount <= 0 }
+
+            val dropLocation = event.block.location.clone().add(0.5, 0.0, 0.5)
+            storedItems.forEach { item ->
+                event.items.add(event.block.world.dropItem(dropLocation, item))
             }
-        });
+        }
     }
 
     @EventHandler
-    public void onBlockBreak(BlockBreakEvent event) {
-        ItemStack i = event.getPlayer().getInventory().getItemInMainHand().clone();
-        if (i.getItemMeta() == null) return;
-        i.addUnsafeEnchantment(OriginsFantasy.getNMSInvoker().getFortuneEnchantment(), i.getEnchantmentLevel(OriginsFantasy.getNMSInvoker().getFortuneEnchantment()) + 2);
-        blocks.put(event.getPlayer(), event.getBlock().getDrops(i, event.getPlayer()));
+    fun onBlockBreak(event: BlockBreakEvent) {
+        val mainHandItem = event.player.inventory.itemInMainHand.clone()
+        val meta = mainHandItem.itemMeta ?: return
+        val fortune = NMSInvoker.getFortuneEnchantment()
+        mainHandItem.addUnsafeEnchantment(fortune, mainHandItem.getEnchantmentLevel(fortune) + 2)
+        blocks[event.player] = event.block.getDrops(mainHandItem, event.player).toMutableList()
     }
-
-    private final Map<Player, Collection<ItemStack>> blocks = new HashMap<>();
 }

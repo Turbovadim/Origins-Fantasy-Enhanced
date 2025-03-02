@@ -15,8 +15,7 @@ class OriginsFantasy : OriginsAddon() {
     }
 
     override fun getAbilities(): List<Ability> {
-        val abilities: MutableList<Ability> = ArrayList<Ability>(
-            listOf<Ability>(
+        val abilities = mutableListOf(
                 AllayMaster(),
                 ArrowEffectBooster(),
                 BardicIntuition(),
@@ -62,7 +61,6 @@ class OriginsFantasy : OriginsAddon() {
                 Stronger(),
                 UndeadAlly()
             )
-        )
         if (nmsInvoker!!.getGenericScaleAttribute() != null) {
             abilities.add(LargeBody())
             abilities.add(SmallBody())

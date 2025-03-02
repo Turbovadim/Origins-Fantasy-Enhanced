@@ -1,45 +1,40 @@
-package com.starshootercity.originsfantasy.abilities;
+package com.starshootercity.originsfantasy.abilities
 
-import com.starshootercity.OriginSwapper;
-import com.starshootercity.OriginsReborn;
-import com.starshootercity.abilities.AbilityRegister;
-import com.starshootercity.abilities.VisibleAbility;
-import net.kyori.adventure.key.Key;
-import org.bukkit.attribute.AttributeInstance;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDeathEvent;
-import org.jetbrains.annotations.NotNull;
+import com.starshootercity.OriginSwapper.LineData
+import com.starshootercity.OriginSwapper.LineData.LineComponent
+import com.starshootercity.OriginSwapper.LineData.LineComponent.LineType
+import com.starshootercity.OriginsReborn
+import com.starshootercity.abilities.AbilityRegister
+import com.starshootercity.abilities.VisibleAbility
+import net.kyori.adventure.key.Key
+import org.bukkit.event.EventHandler
+import org.bukkit.event.Listener
+import org.bukkit.event.entity.EntityDeathEvent
+import kotlin.math.min
 
-import java.util.List;
-
-public class Leeching implements VisibleAbility, Listener {
-    @Override
-    public @NotNull Key getKey() {
-        return Key.key("fantasyorigins:leeching");
+class Leeching : VisibleAbility, Listener {
+    override fun getKey(): Key {
+        return Key.key("fantasyorigins:leeching")
     }
 
-    @Override
-    public @NotNull List<OriginSwapper.LineData.LineComponent> getDescription() {
-        return OriginSwapper.LineData.makeLineFor("Upon killing a mob or player, you sap a portion of its health, healing you.", OriginSwapper.LineData.LineComponent.LineType.DESCRIPTION);
+    override fun getDescription(): MutableList<LineComponent?> {
+        return LineData.makeLineFor(
+            "Upon killing a mob or player, you sap a portion of its health, healing you.",
+            LineType.DESCRIPTION
+        )
     }
 
-    @Override
-    public @NotNull List<OriginSwapper.LineData.LineComponent> getTitle() {
-        return OriginSwapper.LineData.makeLineFor("Leeching", OriginSwapper.LineData.LineComponent.LineType.TITLE);
+    override fun getTitle(): MutableList<LineComponent?> {
+        return LineData.makeLineFor("Leeching", LineType.TITLE)
     }
 
     @EventHandler
-    public void onEntityDeath(EntityDeathEvent event) {
-        if (event.getEntity().getKiller() == null) return;
-        AbilityRegister.runForAbility(event.getEntity().getKiller(), getKey(), () -> {
-            AttributeInstance mH = event.getEntity().getKiller().getAttribute(OriginsReborn.getNMSInvoker().getMaxHealthAttribute());
-            if (mH == null) return;
-            double maxHealth = mH.getValue();
-            AttributeInstance mobMH = event.getEntity().getAttribute(OriginsReborn.getNMSInvoker().getMaxHealthAttribute());
-            if (mobMH == null) return;
-            double mobMaxHealth = mobMH.getValue();
-            event.getEntity().getKiller().setHealth(Math.min(maxHealth, event.getEntity().getKiller().getHealth() + (mobMaxHealth / 5)));
-        });
+    fun onEntityDeath(event: EntityDeathEvent) {
+        val killer = event.entity.killer ?: return
+        AbilityRegister.runForAbility(killer, key) {
+            val killerMaxHealth = killer.getAttribute(OriginsReborn.NMSInvoker.maxHealthAttribute)?.value ?: return@runForAbility
+            val mobMaxHealth = event.entity.getAttribute(OriginsReborn.NMSInvoker.maxHealthAttribute)?.value ?: return@runForAbility
+            killer.health = min(killerMaxHealth, killer.health + (mobMaxHealth / 5))
+        }
     }
 }

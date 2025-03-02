@@ -1,45 +1,47 @@
-package com.starshootercity.originsfantasy.abilities;
+package com.starshootercity.originsfantasy.abilities
 
-import com.starshootercity.OriginSwapper;
-import com.starshootercity.abilities.AbilityRegister;
-import com.starshootercity.abilities.VisibleAbility;
-import net.kyori.adventure.key.Key;
-import org.bukkit.Material;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
+import com.starshootercity.OriginSwapper.LineData
+import com.starshootercity.OriginSwapper.LineData.LineComponent
+import com.starshootercity.OriginSwapper.LineData.LineComponent.LineType
+import com.starshootercity.abilities.AbilityRegister
+import com.starshootercity.abilities.VisibleAbility
+import net.kyori.adventure.key.Key
+import org.bukkit.Material
+import org.bukkit.event.EventHandler
+import org.bukkit.event.Listener
+import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.inventory.ItemStack
 
-import java.util.List;
-
-public class BreathStorer implements VisibleAbility, Listener {
-    @Override
-    public @NotNull List<OriginSwapper.LineData.LineComponent> getDescription() {
-        return OriginSwapper.LineData.makeLineFor("By right clicking using an empty bottle, you can store your own Dragon's Breath.", OriginSwapper.LineData.LineComponent.LineType.DESCRIPTION);
+class BreathStorer : VisibleAbility, Listener {
+    override fun getDescription(): MutableList<LineComponent?> {
+        return LineData.makeLineFor(
+            "By right clicking using an empty bottle, you can store your own Dragon's Breath.",
+            LineType.DESCRIPTION
+        )
     }
 
-    @Override
-    public @NotNull List<OriginSwapper.LineData.LineComponent> getTitle() {
-        return OriginSwapper.LineData.makeLineFor("Dragon's Breath", OriginSwapper.LineData.LineComponent.LineType.TITLE);
+    override fun getTitle(): MutableList<LineComponent?> {
+        return LineData.makeLineFor("Dragon's Breath", LineType.TITLE)
     }
 
-    @Override
-    public @NotNull Key getKey() {
-        return Key.key("fantasyorigins:breath_storer");
+    override fun getKey(): Key {
+        return Key.key("fantasyorigins:breath_storer")
     }
 
     @EventHandler
-    public void onPlayerInteract(PlayerInteractEvent event) {
-        if (event.getItem() == null) return;
-        if (!event.getAction().isRightClick()) return;
-        AbilityRegister.runForAbility(event.getPlayer(), getKey(), () -> {
-            if (event.getItem().getType() == Material.GLASS_BOTTLE) {
-                event.getItem().setAmount(event.getItem().getAmount() - 1);
-                for (ItemStack item : event.getPlayer().getInventory().addItem(new ItemStack(Material.DRAGON_BREATH)).values()) {
-                    event.getPlayer().getWorld().dropItemNaturally(event.getPlayer().getLocation(), item);
-                }
+    fun onPlayerInteract(event: PlayerInteractEvent) {
+        val player = event.player
+        val item = event.item ?: return
+        if (!event.action.isRightClick) return
+
+        AbilityRegister.runForAbility(player, key) {
+            if (item.type == Material.GLASS_BOTTLE) {
+                item.amount--
+                player.inventory.addItem(ItemStack(Material.DRAGON_BREATH))
+                    .values.forEach { leftover ->
+                        player.world.dropItemNaturally(player.location, leftover)
+                    }
             }
-        });
+        }
     }
 }

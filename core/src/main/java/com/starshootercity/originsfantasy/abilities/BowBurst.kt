@@ -1,65 +1,64 @@
-package com.starshootercity.originsfantasy.abilities;
+package com.starshootercity.originsfantasy.abilities
 
-import com.starshootercity.OriginSwapper;
-import com.starshootercity.abilities.AbilityRegister;
-import com.starshootercity.abilities.VisibleAbility;
-import com.starshootercity.originsfantasy.OriginsFantasy;
-import net.kyori.adventure.key.Key;
-import org.bukkit.Material;
-import org.bukkit.entity.AbstractArrow;
-import org.bukkit.entity.Arrow;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
+import com.starshootercity.OriginSwapper.LineData
+import com.starshootercity.OriginSwapper.LineData.LineComponent
+import com.starshootercity.OriginSwapper.LineData.LineComponent.LineType
+import com.starshootercity.abilities.AbilityRegister
+import com.starshootercity.abilities.VisibleAbility
+import com.starshootercity.originsfantasy.OriginsFantasy.Companion.NMSInvoker
+import net.kyori.adventure.key.Key
+import org.bukkit.Material
+import org.bukkit.entity.AbstractArrow
+import org.bukkit.entity.Arrow
+import org.bukkit.event.EventHandler
+import org.bukkit.event.Listener
+import org.bukkit.event.player.PlayerInteractEvent
 
-import java.util.List;
-
-public class BowBurst implements VisibleAbility, Listener {
-    @Override
-    public @NotNull List<OriginSwapper.LineData.LineComponent> getDescription() {
-        return OriginSwapper.LineData.makeLineFor("By casting a spell on any regular arrow, you can instantly shoot 3 arrows at once using only one, but this disables your bow for 7 seconds.", OriginSwapper.LineData.LineComponent.LineType.DESCRIPTION);
+class BowBurst : VisibleAbility, Listener {
+    override fun getDescription(): MutableList<LineComponent?> {
+        return LineData.makeLineFor(
+            "By casting a spell on any regular arrow, you can instantly shoot 3 arrows at once using only one, but this disables your bow for 7 seconds.",
+            LineType.DESCRIPTION
+        )
     }
 
-    @Override
-    public @NotNull List<OriginSwapper.LineData.LineComponent> getTitle() {
-        return OriginSwapper.LineData.makeLineFor("Bow Burst", OriginSwapper.LineData.LineComponent.LineType.TITLE);
+    override fun getTitle(): MutableList<LineComponent?> {
+        return LineData.makeLineFor("Bow Burst", LineType.TITLE)
     }
 
-    @Override
-    public @NotNull Key getKey() {
-        return Key.key("fantasyorigins:bow_burst");
+    override fun getKey(): Key {
+        return Key.key("fantasyorigins:bow_burst")
     }
 
     @EventHandler
-    public void onPlayerInteract(PlayerInteractEvent event) {
-        if (!event.getAction().isLeftClick()) return;
-        if (event.getItem() == null || event.getItem().getType() != Material.BOW) return;
-        if (event.getPlayer().getCooldown(Material.BOW) > 0) return;
-        AbilityRegister.runForAbility(event.getPlayer(), getKey(), () -> {
-            if (event.getPlayer().getInventory().contains(Material.ARROW)) {
-                for (ItemStack item : event.getPlayer().getInventory()) {
-                    if (item == null) continue;
-                    if (item.getType() == Material.ARROW) {
-                        item.setAmount(item.getAmount() - 1);
-                        break;
-                    }
+    fun onPlayerInteract(event: PlayerInteractEvent) {
+        if (!event.action.isLeftClick) return
+        val item = event.item ?: return
+        if (item.type != Material.BOW) return
+
+        val player = event.player
+        if (player.getCooldown(Material.BOW) > 0) return
+
+        AbilityRegister.runForAbility(player, key) {
+            if (player.inventory.contains(Material.ARROW)) {
+                player.inventory.firstOrNull { it?.type == Material.ARROW }?.let {
+                    it.amount--
                 }
-                event.getPlayer().setCooldown(Material.BOW, 140);
 
-                Arrow a1 = event.getPlayer().launchProjectile(Arrow.class);
-                Arrow a2 = event.getPlayer().launchProjectile(Arrow.class);
-                Arrow a3 = event.getPlayer().launchProjectile(Arrow.class);
+                player.setCooldown(Material.BOW, 140)
 
-                OriginsFantasy.getNMSInvoker().launchArrow(a1, event.getPlayer(), 0.0F, 3, 15);
-                OriginsFantasy.getNMSInvoker().launchArrow(a1, event.getPlayer(), 0.0F, 3, 0);
-                OriginsFantasy.getNMSInvoker().launchArrow(a1, event.getPlayer(), 0.0F, 3, 15);
+                val arrow1 = player.launchProjectile<Arrow>(Arrow::class.java)
+                val arrow2 = player.launchProjectile<Arrow>(Arrow::class.java)
+                val arrow3 = player.launchProjectile<Arrow>(Arrow::class.java)
 
-                a1.setPickupStatus(AbstractArrow.PickupStatus.CREATIVE_ONLY);
-                a2.setPickupStatus(AbstractArrow.PickupStatus.CREATIVE_ONLY);
-                a3.setPickupStatus(AbstractArrow.PickupStatus.CREATIVE_ONLY);
+                NMSInvoker.launchArrow(arrow1, player, 0.0f, 3f, 15f)
+                NMSInvoker.launchArrow(arrow2, player, 0.0f, 3f, 0f)
+                NMSInvoker.launchArrow(arrow3, player, 0.0f, 3f, 15f)
+
+                arrow1.pickupStatus = AbstractArrow.PickupStatus.CREATIVE_ONLY
+                arrow2.pickupStatus = AbstractArrow.PickupStatus.CREATIVE_ONLY
+                arrow3.pickupStatus = AbstractArrow.PickupStatus.CREATIVE_ONLY
             }
-        });
+        }
     }
 }
