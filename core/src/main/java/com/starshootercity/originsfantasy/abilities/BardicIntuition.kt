@@ -3,7 +3,6 @@ package com.starshootercity.originsfantasy.abilities
 import com.starshootercity.OriginSwapper.LineData
 import com.starshootercity.OriginSwapper.LineData.LineComponent
 import com.starshootercity.OriginSwapper.LineData.LineComponent.LineType
-import com.starshootercity.abilities.AbilityRegister
 import com.starshootercity.abilities.VisibleAbility
 import net.kyori.adventure.key.Key
 import org.bukkit.Tag
@@ -42,7 +41,7 @@ class BardicIntuition : VisibleAbility, Listener {
         val discs = Tag.ITEMS_CREEPER_DROP_MUSIC_DISCS.getValues().toList()
         val disc = discs[random.nextInt(discs.size)]
 
-        AbilityRegister.runForAbility(killer, key) {
+        runForAbility(killer) {
             event.drops.add(ItemStack(disc))
         }
     }

@@ -5,7 +5,6 @@ import com.starshootercity.OriginSwapper.LineData
 import com.starshootercity.OriginSwapper.LineData.LineComponent
 import com.starshootercity.OriginSwapper.LineData.LineComponent.LineType
 import com.starshootercity.OriginsReborn
-import com.starshootercity.abilities.AbilityRegister
 import com.starshootercity.abilities.VisibleAbility
 import net.kyori.adventure.key.Key
 import org.bukkit.Bukkit
@@ -35,7 +34,7 @@ class InfiniteHaste : VisibleAbility, Listener {
 
         val hasteEffectType = OriginsReborn.NMSInvoker.hasteEffect
         Bukkit.getOnlinePlayers().forEach { player ->
-            AbilityRegister.runForAbility(player, key) {
+            runForAbility(player) {
                 player.addPotionEffect(PotionEffect(hasteEffectType, 30, 1))
             }
         }

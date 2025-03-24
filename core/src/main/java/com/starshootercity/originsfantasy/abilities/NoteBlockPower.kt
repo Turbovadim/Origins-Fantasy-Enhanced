@@ -4,7 +4,6 @@ import com.starshootercity.OriginSwapper.LineData
 import com.starshootercity.OriginSwapper.LineData.LineComponent
 import com.starshootercity.OriginSwapper.LineData.LineComponent.LineType
 import com.starshootercity.OriginsReborn
-import com.starshootercity.abilities.AbilityRegister
 import com.starshootercity.abilities.VisibleAbility
 import net.kyori.adventure.key.Key
 import org.bukkit.entity.Player
@@ -35,7 +34,7 @@ class NoteBlockPower : VisibleAbility, Listener {
         event.block.location.getNearbyEntities(32.0, 32.0, 32.0)
             .filterIsInstance<Player>()
             .forEach { player ->
-                AbilityRegister.runForAbility(player, key) {
+                runForAbility(player) {
                     player.addPotionEffect(PotionEffect(PotionEffectType.SPEED, 600, 1))
                     player.addPotionEffect(PotionEffect(OriginsReborn.NMSInvoker.strengthEffect, 600, 1))
                 }

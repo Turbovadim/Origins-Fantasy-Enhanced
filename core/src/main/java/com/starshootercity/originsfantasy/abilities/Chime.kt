@@ -3,7 +3,6 @@ package com.starshootercity.originsfantasy.abilities
 import com.starshootercity.OriginSwapper.LineData
 import com.starshootercity.OriginSwapper.LineData.LineComponent
 import com.starshootercity.OriginSwapper.LineData.LineComponent.LineType
-import com.starshootercity.abilities.AbilityRegister
 import com.starshootercity.abilities.VisibleAbility
 import net.kyori.adventure.key.Key
 import org.bukkit.Material
@@ -37,7 +36,7 @@ class Chime : VisibleAbility, Listener {
         if (item.type != Material.AMETHYST_SHARD) return
 
         val player = event.player
-        AbilityRegister.runForAbility(player, key) {
+        runForAbility(player) {
             item.amount--
             player.addPotionEffect(PotionEffect(PotionEffectType.REGENERATION, 900, 1))
             event.hand?.let { hand ->

@@ -3,7 +3,6 @@ package com.starshootercity.originsfantasy.abilities
 import com.starshootercity.OriginSwapper.LineData
 import com.starshootercity.OriginSwapper.LineData.LineComponent
 import com.starshootercity.OriginSwapper.LineData.LineComponent.LineType
-import com.starshootercity.abilities.AbilityRegister
 import com.starshootercity.abilities.VisibleAbility
 import com.starshootercity.originsfantasy.OriginsFantasy.Companion.NMSInvoker
 import net.kyori.adventure.key.Key
@@ -29,10 +28,7 @@ class PoorShot : VisibleAbility, Listener {
 
     @EventHandler
     fun onEntityShootBow(event: EntityShootBowEvent) {
-        AbilityRegister.runForAbility(
-            event.getEntity(),
-            key
-        ) {
+        runForAbility(event.entity) {
             NMSInvoker.launchArrow(event.projectile, event.getEntity(), 0f, event.force, 2.4f)
         }
     }

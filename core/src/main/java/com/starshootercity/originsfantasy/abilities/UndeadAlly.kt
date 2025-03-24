@@ -3,7 +3,6 @@ package com.starshootercity.originsfantasy.abilities
 import com.starshootercity.OriginSwapper.LineData
 import com.starshootercity.OriginSwapper.LineData.LineComponent
 import com.starshootercity.OriginSwapper.LineData.LineComponent.LineType
-import com.starshootercity.abilities.AbilityRegister
 import com.starshootercity.abilities.VisibleAbility
 import io.papermc.paper.tag.EntityTags
 import net.kyori.adventure.key.Key
@@ -35,7 +34,7 @@ class UndeadAlly : VisibleAbility, Listener {
     fun onEntityTargetLivingEntity(event: EntityTargetLivingEntityEvent) {
         if (!EntityTags.UNDEADS.isTagged(event.entityType)) return
         val target = event.target as? Player ?: return
-        AbilityRegister.runForAbility(target, key) {
+        runForAbility(target) {
             val attacked = attackedEntities.getOrPut(target) { mutableListOf() }
             if (!attacked.contains(event.entity)) {
                 event.isCancelled = true

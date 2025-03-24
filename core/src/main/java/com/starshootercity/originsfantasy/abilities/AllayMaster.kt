@@ -3,7 +3,6 @@ package com.starshootercity.originsfantasy.abilities
 import com.starshootercity.OriginSwapper.LineData
 import com.starshootercity.OriginSwapper.LineData.LineComponent
 import com.starshootercity.OriginSwapper.LineData.LineComponent.LineType
-import com.starshootercity.abilities.AbilityRegister
 import com.starshootercity.abilities.VisibleAbility
 import com.starshootercity.originsfantasy.OriginsFantasy.Companion.NMSInvoker
 import net.kyori.adventure.key.Key
@@ -33,7 +32,7 @@ class AllayMaster : VisibleAbility, Listener {
     @EventHandler
     fun onPlayerInteractEntity(event: PlayerInteractEntityEvent) {
         val player = event.player
-        AbilityRegister.runForAbility(player, key) {
+        runForAbility(player) {
             val allay = event.rightClicked as? Allay ?: return@runForAbility
             val item = player.inventory.getItem(event.hand)
             if (item.type != Material.AMETHYST_SHARD) return@runForAbility

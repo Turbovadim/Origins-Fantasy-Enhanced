@@ -3,7 +3,6 @@ package com.starshootercity.originsfantasy.abilities
 import com.starshootercity.OriginSwapper.LineData
 import com.starshootercity.OriginSwapper.LineData.LineComponent
 import com.starshootercity.OriginSwapper.LineData.LineComponent.LineType
-import com.starshootercity.abilities.AbilityRegister
 import com.starshootercity.abilities.VisibleAbility
 import com.starshootercity.originsfantasy.OriginsFantasy.Companion.getInstance
 import net.kyori.adventure.key.Key
@@ -31,13 +30,10 @@ class IncreasedArrowSpeed : VisibleAbility, Listener {
     @EventHandler
     fun onEntityShootBow(event: EntityShootBowEvent) {
         val v = getInstance().getConfig().getInt("arrow-speed-multiplier", 2)
-        AbilityRegister.runForAbility(
-            event.getEntity(),
-            key,
-            Runnable {
-                Bukkit.getScheduler().scheduleSyncDelayedTask(
-                    getInstance(),
-                    Runnable { event.projectile.velocity = event.projectile.velocity.multiply(v) })
-            })
+        runForAbility(event.entity) {
+            Bukkit.getScheduler().scheduleSyncDelayedTask(getInstance()) {
+                event.projectile.velocity = event.projectile.velocity.multiply(v)
+            }
+        }
     }
 }

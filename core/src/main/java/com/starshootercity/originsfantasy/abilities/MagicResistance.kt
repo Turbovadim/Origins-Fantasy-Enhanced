@@ -3,7 +3,6 @@ package com.starshootercity.originsfantasy.abilities
 import com.starshootercity.OriginSwapper.LineData
 import com.starshootercity.OriginSwapper.LineData.LineComponent
 import com.starshootercity.OriginSwapper.LineData.LineComponent.LineType
-import com.starshootercity.abilities.AbilityRegister
 import com.starshootercity.abilities.VisibleAbility
 import net.kyori.adventure.key.Key
 import org.bukkit.event.EventHandler
@@ -27,7 +26,7 @@ class MagicResistance : VisibleAbility, Listener {
 
     @EventHandler
     fun onEntityDamage(event: EntityDamageEvent) {
-        AbilityRegister.runForAbility(event.entity, key) {
+        runForAbility(event.entity) {
             if (event.cause == EntityDamageEvent.DamageCause.MAGIC) {
                 event.isCancelled = true
             }
@@ -37,7 +36,7 @@ class MagicResistance : VisibleAbility, Listener {
     @EventHandler
     fun onEntityPotionEffect(event: EntityPotionEffectEvent) {
         event.newEffect ?: return
-        AbilityRegister.runForAbility(event.entity, key) {
+        runForAbility(event.entity) {
             if (event.newEffect?.type == PotionEffectType.POISON) {
                 event.isCancelled = true
             }

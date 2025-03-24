@@ -4,7 +4,6 @@ import com.starshootercity.OriginSwapper.BooleanPDT
 import com.starshootercity.OriginSwapper.LineData
 import com.starshootercity.OriginSwapper.LineData.LineComponent
 import com.starshootercity.OriginSwapper.LineData.LineComponent.LineType
-import com.starshootercity.abilities.AbilityRegister
 import com.starshootercity.abilities.VisibleAbility
 import com.starshootercity.originsfantasy.OriginsFantasy.Companion.getInstance
 import net.kyori.adventure.key.Key
@@ -31,7 +30,7 @@ class IncreasedArrowDamage : VisibleAbility, Listener {
 
     @EventHandler
     fun onEntityShootBow(event: EntityShootBowEvent) {
-        AbilityRegister.runForAbility(event.entity, key) {
+        runForAbility(event.entity) {
             event.projectile.persistentDataContainer.set(key, BooleanPDT.BOOLEAN, true)
         }
     }

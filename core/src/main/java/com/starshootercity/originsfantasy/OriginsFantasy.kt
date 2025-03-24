@@ -4,6 +4,7 @@ import com.starshootercity.OriginsAddon
 import com.starshootercity.abilities.Ability
 import com.starshootercity.originsfantasy.abilities.*
 import org.bukkit.Bukkit
+import org.endera.enderalib.utils.async.BukkitDispatcher
 
 class OriginsFantasy : OriginsAddon() {
     override fun getNamespace(): String {
@@ -71,6 +72,7 @@ class OriginsFantasy : OriginsAddon() {
     override fun onRegister() {
         initializeNMSInvoker()
         saveDefaultConfig()
+        bukkitDispatcher = BukkitDispatcher(this)
 
         if (!config.contains("arrow-speed-multiplier")) {
             config.set("arrow-speed-multiplier", 2)
@@ -89,6 +91,8 @@ class OriginsFantasy : OriginsAddon() {
 
     companion object {
         private lateinit var instance: OriginsFantasy
+
+        lateinit var bukkitDispatcher: BukkitDispatcher
 
         @JvmStatic
         fun getInstance(): OriginsFantasy {

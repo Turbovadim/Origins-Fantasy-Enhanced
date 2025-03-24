@@ -7,7 +7,6 @@ import com.starshootercity.OriginSwapper.LineData
 import com.starshootercity.OriginSwapper.LineData.LineComponent
 import com.starshootercity.OriginSwapper.LineData.LineComponent.LineType
 import com.starshootercity.OriginsReborn
-import com.starshootercity.abilities.AbilityRegister
 import com.starshootercity.abilities.VisibleAbility
 import com.starshootercity.events.PlayerSwapOriginEvent
 import com.starshootercity.originsfantasy.FantasyEntityDismountEvent
@@ -48,11 +47,11 @@ class PermanentHorse : VisibleAbility, Listener {
     @EventHandler
     fun onEntityDismount(event: FantasyEntityDismountEvent) {
         if (event.getEntity().isDead) return
-        AbilityRegister.runForAbility(event.getEntity(), key, Runnable {
+        runForAbility(event.entity) {
             event.setCancelled(true)
             val vehicle = event.dismounted.vehicle
             vehicle?.removePassenger(event.dismounted)
-        })
+        }
     }
 
     @EventHandler
@@ -60,7 +59,7 @@ class PermanentHorse : VisibleAbility, Listener {
         val player = event.player
         if (player.persistentDataContainer.has(teleportingKey)) return
 
-        AbilityRegister.runForAbility(player, key) {
+        runForAbility(player) {
             player.vehicle?.let { vehicle ->
                 vehicle.removePassenger(player)
                 player.persistentDataContainer.set(teleportingKey, PersistentDataType.BOOLEAN, true)
@@ -79,7 +78,7 @@ class PermanentHorse : VisibleAbility, Listener {
     @EventHandler
     fun onEntityMount(event: FantasyEntityMountEvent) {
         val entity = event.entity
-        AbilityRegister.runForAbility(entity, key) {
+        runForAbility(entity) {
             val mountOwner = event.mount.persistentDataContainer.getOrDefault(key, PersistentDataType.STRING, "")
             if (mountOwner != entity.uniqueId.toString()) {
                 event.isCancelled = true
@@ -102,7 +101,7 @@ class PermanentHorse : VisibleAbility, Listener {
         Bukkit.getOnlinePlayers()
             .filter { !it.isDead }
             .forEach { player ->
-                AbilityRegister.runForAbility(player, key) {
+                runForAbility(player) {
                     if (player.persistentDataContainer.has(teleportingKey) || player.vehicle != null) return@runForAbility
 
                     val horse = player.world.spawnEntity(player.location, EntityType.HORSE) as Horse
@@ -143,7 +142,7 @@ class PermanentHorse : VisibleAbility, Listener {
 
     @EventHandler
     fun onPlayerDeath(event: PlayerDeathEvent) {
-        AbilityRegister.runForAbility(event.getEntity(), key) {
+        runForAbility(event.entity) {
             val vehicle = event.getEntity().vehicle
             if (vehicle != null && vehicle.persistentDataContainer.has(key)) vehicle.remove()
         }
@@ -157,7 +156,7 @@ class PermanentHorse : VisibleAbility, Listener {
 
     @EventHandler
     fun onPlayerBedEnter(event: PlayerBedEnterEvent) {
-        AbilityRegister.runForAbility(event.getPlayer(), key) {
+        runForAbility(event.player) {
             event.setUseBed(Event.Result.DENY)
         }
     }

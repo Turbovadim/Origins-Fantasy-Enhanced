@@ -3,7 +3,6 @@ package com.starshootercity.originsfantasy.abilities
 import com.starshootercity.OriginSwapper.LineData
 import com.starshootercity.OriginSwapper.LineData.LineComponent
 import com.starshootercity.OriginSwapper.LineData.LineComponent.LineType
-import com.starshootercity.abilities.AbilityRegister
 import com.starshootercity.abilities.VisibleAbility
 import net.kyori.adventure.key.Key
 import org.bukkit.Material
@@ -34,7 +33,7 @@ class BreathStorer : VisibleAbility, Listener {
         val item = event.item ?: return
         if (!event.action.isRightClick) return
 
-        AbilityRegister.runForAbility(player, key) {
+        runForAbility(player) {
             if (item.type == Material.GLASS_BOTTLE) {
                 item.amount--
                 player.inventory.addItem(ItemStack(Material.DRAGON_BREATH))

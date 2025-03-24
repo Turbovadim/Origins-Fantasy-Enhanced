@@ -4,7 +4,6 @@ import com.destroystokyo.paper.MaterialTags
 import com.starshootercity.OriginSwapper.LineData
 import com.starshootercity.OriginSwapper.LineData.LineComponent
 import com.starshootercity.OriginSwapper.LineData.LineComponent.LineType
-import com.starshootercity.abilities.AbilityRegister
 import com.starshootercity.abilities.VisibleAbility
 import com.starshootercity.originsfantasy.OriginsFantasy.Companion.getInstance
 import net.kyori.adventure.key.Key
@@ -35,7 +34,7 @@ class DragonFireball : VisibleAbility, Listener {
         val player = event.player
         val item = event.item
 
-        AbilityRegister.runForAbility(player, key) {
+        runForAbility(player) {
             if (!event.action.isRightClick) return@runForAbility
             if (event.clickedBlock != null) return@runForAbility
             if (item == null) return@runForAbility

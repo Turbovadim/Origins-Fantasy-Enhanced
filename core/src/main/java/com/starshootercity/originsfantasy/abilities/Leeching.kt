@@ -4,7 +4,6 @@ import com.starshootercity.OriginSwapper.LineData
 import com.starshootercity.OriginSwapper.LineData.LineComponent
 import com.starshootercity.OriginSwapper.LineData.LineComponent.LineType
 import com.starshootercity.OriginsReborn
-import com.starshootercity.abilities.AbilityRegister
 import com.starshootercity.abilities.VisibleAbility
 import net.kyori.adventure.key.Key
 import org.bukkit.event.EventHandler
@@ -31,7 +30,7 @@ class Leeching : VisibleAbility, Listener {
     @EventHandler
     fun onEntityDeath(event: EntityDeathEvent) {
         val killer = event.entity.killer ?: return
-        AbilityRegister.runForAbility(killer, key) {
+        runForAbility(killer) {
             val killerMaxHealth = killer.getAttribute(OriginsReborn.NMSInvoker.maxHealthAttribute)?.value ?: return@runForAbility
             val mobMaxHealth = event.entity.getAttribute(OriginsReborn.NMSInvoker.maxHealthAttribute)?.value ?: return@runForAbility
             killer.health = min(killerMaxHealth, killer.health + (mobMaxHealth / 5))

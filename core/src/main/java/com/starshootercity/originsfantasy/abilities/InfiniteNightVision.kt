@@ -4,7 +4,6 @@ import com.destroystokyo.paper.event.server.ServerTickEndEvent
 import com.starshootercity.OriginSwapper.LineData
 import com.starshootercity.OriginSwapper.LineData.LineComponent
 import com.starshootercity.OriginSwapper.LineData.LineComponent.LineType
-import com.starshootercity.abilities.AbilityRegister
 import com.starshootercity.abilities.VisibleAbility
 import net.kyori.adventure.key.Key
 import org.bukkit.Bukkit
@@ -33,7 +32,7 @@ class InfiniteNightVision : VisibleAbility, Listener {
         if (event.tickNumber % 15 != 0) return
 
         Bukkit.getOnlinePlayers().forEach { player ->
-            AbilityRegister.runForAbility(player, key) {
+            runForAbility(player) {
                 player.addPotionEffect(nightVisionEffect)
             }
         }

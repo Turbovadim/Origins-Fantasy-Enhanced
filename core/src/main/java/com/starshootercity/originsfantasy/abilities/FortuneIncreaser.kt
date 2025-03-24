@@ -3,7 +3,6 @@ package com.starshootercity.originsfantasy.abilities
 import com.starshootercity.OriginSwapper.LineData
 import com.starshootercity.OriginSwapper.LineData.LineComponent
 import com.starshootercity.OriginSwapper.LineData.LineComponent.LineType
-import com.starshootercity.abilities.AbilityRegister
 import com.starshootercity.abilities.VisibleAbility
 import com.starshootercity.originsfantasy.OriginsFantasy.Companion.NMSInvoker
 import net.kyori.adventure.key.Key
@@ -38,7 +37,7 @@ class FortuneIncreaser : VisibleAbility, Listener {
     fun onBlockDropItem(event: BlockDropItemEvent) {
         if (event.player.inventory.itemInMainHand.itemMeta == null) return
 
-        AbilityRegister.runForAbility(event.player, key) {
+        runForAbility(event.player) {
             val storedItems = blocks[event.player]?.toMutableList() ?: mutableListOf()
 
             val droppedItems = event.items.map { it.itemStack }
@@ -66,7 +65,7 @@ class FortuneIncreaser : VisibleAbility, Listener {
     @EventHandler
     fun onBlockBreak(event: BlockBreakEvent) {
         val mainHandItem = event.player.inventory.itemInMainHand.clone()
-        val meta = mainHandItem.itemMeta ?: return
+        mainHandItem.itemMeta ?: return
         val fortune = NMSInvoker.getFortuneEnchantment()
         mainHandItem.addUnsafeEnchantment(fortune, mainHandItem.getEnchantmentLevel(fortune) + 2)
         blocks[event.player] = event.block.getDrops(mainHandItem, event.player).toMutableList()

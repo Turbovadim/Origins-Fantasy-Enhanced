@@ -8,6 +8,7 @@ plugins {
 
 repositories {
     mavenCentral()
+    maven("https://jitpack.io/")
     maven { url = uri("https://repo.papermc.io/repository/maven-public/") }
 }
 
@@ -32,9 +33,11 @@ dependencies {
     compileOnly(project(":1.21.1"))
     compileOnly(project(":1.21.3"))
     compileOnly(project(":1.21.4"))
-    compileOnly(files("libs/Origins-Reborn-Enhanced-2.4.9-all.jar"))
+    compileOnly(files("libs/Origins-Reborn-Enhanced-2.5.1-all.jar"))
     paperweight.paperDevBundle("1.21.4-R0.1-SNAPSHOT")
     implementation(kotlin("stdlib-jdk8"))
+    compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.1")
+    compileOnly("com.github.Turbovadim:EnderaLib:1.4.2")
 }
 
 java {

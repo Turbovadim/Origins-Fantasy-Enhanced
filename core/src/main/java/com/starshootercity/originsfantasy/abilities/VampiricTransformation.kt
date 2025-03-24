@@ -4,7 +4,6 @@ import com.starshootercity.OriginSwapper
 import com.starshootercity.OriginSwapper.LineData
 import com.starshootercity.OriginSwapper.LineData.LineComponent
 import com.starshootercity.OriginSwapper.LineData.LineComponent.LineType
-import com.starshootercity.abilities.AbilityRegister
 import com.starshootercity.abilities.VisibleAbility
 import com.starshootercity.events.PlayerSwapOriginEvent.SwapReason
 import com.starshootercity.originsfantasy.OriginsFantasy.Companion.getInstance
@@ -42,7 +41,7 @@ class VampiricTransformation : VisibleAbility, Listener {
         val deceased = event.entity
         if (deceased !is Player) return
         val killer = deceased.killer ?: return
-        AbilityRegister.runForAbility(killer, key) {
+        runForAbility(killer) {
             val chance = getInstance().config.getDouble("vampire-transform-chance", 1.0)
             if (random.nextDouble() <= chance) {
                 OriginSwapper.setOrigin(
